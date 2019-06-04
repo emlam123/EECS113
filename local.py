@@ -17,27 +17,3 @@ def local_data():
         return (temperature,humidity)
     else:
         return None 
-'''
-    temp_avg += temperature
-    hum_avg += humidity
-    count=count+1
-    print("TEMP SUM: %d HUM SUM: %d\n" %(temp_avg,hum_avg))
-    new_hour = datetime.datetime.now().time().hour
-
-        #print("Temp Avg: %d Hum Avg: %d\n" %(temp_avg, hum_avg))
-        #cimis_hr, cimis_local, cimis_hum = cimis()
-        #print("CIMIS hr: %d eto: %f hum: %f" %(cimis_hr, cimis_local, cimis_hum))
-    if (new_hour == this_hour+1):
-        temp_avg = temp_avg/count
-        hum_avg = hum_avg/count
-        print("Temp Avg: %d Hum Avg: %d\n" %(temp_avg, hum_avg))
-        cimis_hr, cimis_local, cimis_hum = cimis()
-        print("CIMIS hr: %d eto: %f hum: %f" %(cimis_hr, cimis_local, cimis_hum))
-        #compute temp and humidity averages 
-        #compare with CIMIS data
-        temp_avg=0
-        hum_avg=0
-        count=0
-        this_hour = datetime.datetime.now().time().hour
-        
-'''

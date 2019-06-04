@@ -1,8 +1,10 @@
 import RPi.GPIO as GPIO
 import time
 
+#GPIO pins defined
 RelayPin = 17
 PIRPin = 26
+<<<<<<< HEAD
 def setup():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
