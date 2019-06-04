@@ -16,10 +16,6 @@ def main():
 			print('Relay close: Sprinkler Off')
 			print('Motion detected')
 			GPIO.output(RelayPin, GPIO.LOW)
-			start_t = time.time()
-		if detect == 1 and time.time() - start_t > 10:
-			print('Timer > 10')
-			detect = 0
 			
 		elif detect == 0:
 			print('Relay open: Sprinkler On')
