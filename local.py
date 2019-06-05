@@ -16,4 +16,8 @@ def local_data():
         #print ("Temp: {0:0.1f}C Humidity: {1:0.1f} %".format(temperature,humidity))
         return (temperature,humidity)
     else:
-        return None 
+        return None
+
+
+if __name__=='__main__':
+    local_data()

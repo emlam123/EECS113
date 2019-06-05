@@ -4,7 +4,6 @@ import time
 #GPIO pins defined
 RelayPin = 17
 PIRPin = 26
-<<<<<<< HEAD
 def setup():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
@@ -32,10 +31,12 @@ def destroy():
     GPIO.output(RelayPin, GPIO.LOW)
     GPIO.cleanup()
 	
-def relay():
+def relay(start_time,water_time):
     #call setup in main
     #setup()
     try:
-        sprinkler()
+        while(((time.time()-start_time)/60) < water_time):
+            sprinkler()
+
     except KeyboardInterrupt:
         destroy()

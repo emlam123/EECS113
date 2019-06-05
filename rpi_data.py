@@ -1,11 +1,10 @@
 import sched, time,datetime
 #import RPi.GPIO as GPIO
 import local
-import cimis2
+import cimis
 import relay_motion
+import threading
 
-rpi_update = sched.scheduler(time.time, time.sleep)
-test_update = sched.scheduler(time.time, time.sleep)
 temperature = 0
 humidity = 0
 temp_avg = 0
@@ -33,13 +32,13 @@ def water_duration(water):
 # Turn on the relay until the entire law is watered at a rate of 1020 gallons per hour or interrupted by nearby person
 def water_lawn(water_duration):
     start_time = time.time()
-
-    while ((time.time()-start_time) < water_duration):
-        relay_motion.relay()
+    print (start_time)
+    t=threading.Thread(target=relay_motion.relay,args=(start_time,water_duration))
+    t.start()
         
 
 
-
+#get local temp and humidity and compare with CIMIS data every hour to calculate amount of water needed to water lawn
 def read_sensors(current_hour):
 
     global temperature, humidity, temp_avg, hum_avg, count
@@ -49,39 +48,32 @@ def read_sensors(current_hour):
     hum_avg += humidity
     count=count+1
     print("TEMP SUM: %d HUM SUM: %d\n" %(temp_avg,hum_avg))
+    
     new_hour = datetime.datetime.now().time().hour
+    #current_hour = 12
     new_hour = current_hour+1
-        #print("Temp Avg: %d Hum Avg: %d\n" %(temp_avg, hum_avg))
-        #cimis_hr, cimis_local, cimis_hum = cimis()
-        #print("CIMIS hr: %d eto: %f hum: %f" %(cimis_hr, cimis_local, cimis_hum))
+
     if (new_hour == current_hour+1):
         temp_avg = temp_avg/count
         hum_avg = hum_avg/count
         print("Temp Avg: %d Hum Avg: %d\n" %(temp_avg, hum_avg))
-        cimis_hr, cimis_eto, cimis_temp, cimis_hum = cimis2.cimis()
+        
+        cimis_hr, cimis_eto, cimis_temp, cimis_hum = cimis.cimis(current_hour*100)
         print("CIMIS hr: %d eto: %f hum: %f" %(cimis_hr, cimis_eto, cimis_hum))
-        #compute temp and humidity averages 
-        #compare with CIMIS data
+        
         new_et = derate(cimis_eto, cimis_hum, hum_avg, cimis_temp, temp_avg)
+        
         temp_avg=0
         hum_avg=0
         count=0
+
         water = water_needed(new_et)
         water = 372
         print(water)
+        
         duration = water_duration(water)
         print(duration)
         water_lawn(duration)
-        #this_hour = datetime.datetime.now().time().hour
-        
-
-    
-        # read from humidity sensor
-        # read from thermistor
-        # update hourly avg
-        # display values on lcd
-        # decide whether to turn on relay
-        #print (time.time())
 
 
 
