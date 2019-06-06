@@ -11,7 +11,8 @@ def local_data():
     humidity, temperature = fruit.read_retry(11,4) 
     if humidity is not None and temperature is not None:
         #display temp and humidity on lcd
-        mylcd.lcd_display_string("Temp: %.1f C" %(temperature), 1)
+        temperature = temperature * (9/5) + 32
+        mylcd.lcd_display_string("Temp: %.1f F" %(temperature), 1)
         mylcd.lcd_display_string("Humidity: %.1f %% " %(humidity),2)
         #print ("Temp: {0:0.1f}C Humidity: {1:0.1f} %".format(temperature,humidity))
         return (temperature,humidity)

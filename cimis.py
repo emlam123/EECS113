@@ -37,7 +37,7 @@ def cimis(current_hr):
         if (eto.get("Value") != None):
             #print("[%d] Et0: %.2f; Humidity: %.2f" % (int(record.get("Hour")), float(eto.get("Value")), float(humidity.get("Value"))))
             if (int(record.get("Hour"))==current_hr):    
-                print("[%d] Et0: %.2f; Humidity: %.2f" % (int(record.get("Hour")), float(eto.get("Value")), float(humidity.get("Value"))))
+                print("[%d] Et0: %.2f; Temp: %.2f Humidity: %.2f" % (int(record.get("Hour")), float(eto.get("Value")), float(temperature.get("Value")), float(humidity.get("Value"))))
                 return (int(record.get("Hour")), float(eto.get("Value")), float(temperature.get("Value")), float(humidity.get("Value")))
 
         else:
