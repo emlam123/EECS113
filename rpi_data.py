@@ -12,7 +12,8 @@ temp_avg = 0
 hum_avg = 0
 count = 0
 cimis_count = 0
-
+temperatures=[]
+humidities=[]
 # Derate the ET
 def derate(cimis_et, cimis_hum, gpi_hum, cimis_temp, gpi_temp):
     derated_et = cimis_et * (gpi_hum / cimis_hum) * (cimis_temp / gpi_temp)
@@ -44,37 +45,43 @@ def water_lawn(water_duration,mylcd):
 def read_sensors(current_hour,mylcd):
 
 
-    global temperature, humidity, temp_avg, hum_avg, count, cimis_count
+    global temperatures,humidities,temperature, humidity, temp_avg, hum_avg, count, cimis_count
     print("CURRENT HR: %d\n" %current_hour)
 
+    t=threading.Thread(target=local.local_data,args=(mylcd,))
+    t.start()
+
     while (True):
-        temperature, humidity = local.local_data(mylcd)
-        temp_avg += temperature
-        hum_avg += humidity
-        count=count+1
-        print("TEMP SUM: %d HUM SUM: %d\n" %(temp_avg,hum_avg))
+        #t=threading.Thread(target=local.local_data,args=mylcd)
+        #temperature, humidity = local.local_data(mylcd)
+        #temp_avg += temperature
+        #hum_avg += humidity
+        #count=count+1
+        #print("TEMP SUM: %d HUM SUM: %d\n" %(temp_avg,hum_avg))
         
         new_time = datetime.datetime.now().time()
-        #current_hour = 12
         #current_hour = 9
         #new_hour = 10
         #new_hour = current_hour+1
         #cimis_count = 2
         if (new_time.hour > current_hour and (new_time.minute==30 or new_time.minute==59)):
-            temp_avg = temp_avg/count
-            hum_avg = hum_avg/count
-            print("Temp Avg: %d Hum Avg: %d\n" %(temp_avg, hum_avg))
+            #temp_avg = temp_avg/count
+            #hum_avg = hum_avg/count
+            #print("Temp Avg: %d Hum Avg: %d\n" %(temp_avg, hum_avg))
             
-            while (cimis.cimis(current_hour*100)==None):
+            if (cimis.cimis(current_hour*100)==None):
                 cimis.cimis(current_hour*100)
                 print("Current hour:%d\n" %(current_hour))
                 print("waiting\n")
+                #save average and continue collecting data
+                continue
 
             cimis_hr, cimis_eto, cimis_temp, cimis_hum = cimis.cimis(current_hour*100)
             print("CIMIS hr: %d eto: %f hum: %f" %(cimis_hr, cimis_eto, cimis_hum))
             #current_hour = datetime.datetime.now().time().hour
             current_hour += 1
             print("HOUR: %d\n" %current_hour)
+            new_et=0
 
             while(cimis.cimis(current_hour*100)!=None):
                 cimis_hr1, cimis_eto1, cimis_temp1, cimis_hum1 = cimis.cimis(current_hour*100)
@@ -83,6 +90,8 @@ def read_sensors(current_hour,mylcd):
                 cimis_temp += cimis_temp1
                 cimis_hum += cimis_hum1
                 print("TEMP SUM: %f HUM SUM: %f\n" %(cimis_temp, cimis_hum))
+
+                new_et += derate(cimis_eto, cimis_hum, humidities[current_hour], cimis_temp, temperatures[current_hour])
                 current_hour+=1
                 cimis_count+=1
             '''
@@ -100,17 +109,17 @@ def read_sensors(current_hour,mylcd):
                     print("TEMP SUM: %f HUM SUM: %f\n" %(cimis_temp, cimis_hum))
                 '''    
             print("MISSED HOURS: %d\n" %cimis_count)
-            cimis_temp = cimis_temp / (cimis_count+1)
-            cimis_hum = cimis_hum / (cimis_count+1)
+            #cimis_temp = cimis_temp / (cimis_count+1)
+            #cimis_hum = cimis_hum / (cimis_count+1)
             print("After missed: eto: %f temp: %f hum: %f\n" %(cimis_eto, cimis_temp, cimis_hum))
             cimis_count = 0 
             print("CURRENT HOUR NEXT: %d\n" %current_hour) 
                     
-            new_et = derate(cimis_eto, cimis_hum, hum_avg, cimis_temp, temp_avg)
+            #new_et = derate(cimis_eto, cimis_hum, hum_avg, cimis_temp, temp_avg)
             
-            temp_avg=0
-            hum_avg=0
-            count=0
+            #temp_avg=0
+            #hum_avg=0
+            #count=0
 
             water = water_needed(new_et)
             #water = 372
