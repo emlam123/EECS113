@@ -4,15 +4,16 @@ import Adafruit_DHT as fruit
 import I2C_LCD_driver 
 import datetime
 
-def local_data():
+def local_data(mylcd):
+    print("COLLECTING LOCAL DATA\n")
     #lcd = CharLCD(cols=15,rows=2,pin_rs=37,pin_e=35,pins_data=[33,31,29,23])
-    mylcd = I2C_LCD_driver.lcd()
+    #mylcd = I2C_LCD_driver.lcd()
     #we are using DHT11 so 11 is our sensor type and it's connected to GPIO pin 4
     humidity, temperature = fruit.read_retry(11,4) 
     if humidity is not None and temperature is not None:
         #display temp and humidity on lcd
         temperature = temperature * (9/5) + 32
-        mylcd.lcd_display_string("Temp: %.1f F" %(temperature), 1)
+        mylcd.lcd_display_string("Temp: %.1f F      " %(temperature), 1)
         mylcd.lcd_display_string("Humidity: %.1f %% " %(humidity),2)
         #print ("Temp: {0:0.1f}C Humidity: {1:0.1f} %".format(temperature,humidity))
         return (temperature,humidity)

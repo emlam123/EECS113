@@ -1,12 +1,15 @@
 import rpi_data
 import datetime
 import relay_motion    
+import I2C_LCD_driver
 
 def main():
     relay_motion.setup()
     current_hr = datetime.datetime.now().time().hour 
     print(current_hr)
-    rpi_data.read_sensors(current_hr)
+    mylcd = I2C_LCD_driver.lcd()
+    #current_hr = 9
+    rpi_data.read_sensors(current_hr,mylcd)
     # the main function
     # obtain CIMIS humidity, temperature, and ET0
     # obtain RPI humidity, temperature, and ET0

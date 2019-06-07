@@ -18,14 +18,15 @@ def setup():
     time.sleep(10)
 
         
-def sprinkler():
+def sprinkler(mylcd):
     #mylcd = I2C_LCD_driver.lcd()
     #global w_time
-
     detect = GPIO.input(PIRPin)
     if (detect == 1):
         print('Relay close: Sprinkler Off')
-        #mylcd.lcd_display_string("Irrigation off")
+        #mylcd.lcd_clear()
+        mylcd.lcd_display_string("Irrigation off")
+        mylcd.lcd_display_string("                   ",2)
         #time.sleep(5)
         print('Motion detected')
         #w_time += 1
@@ -41,12 +42,12 @@ def destroy():
     GPIO.output(RelayPin, GPIO.LOW)
     GPIO.cleanup()
 	
-def relay(start_time,water_time):
+def relay(start_time,water_time,mylcd):
     global w_time
     w_time = start_time
     try:
         while(((time.time()-w_time)/60) < water_time):
-                sprinkler()
+                sprinkler(mylcd)
         
 
     except KeyboardInterrupt:
