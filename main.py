@@ -8,7 +8,7 @@ def main():
     current_hr = datetime.datetime.now().time().hour 
     print(current_hr)
     mylcd = I2C_LCD_driver.lcd()
-    #current_hr = 9
+    #current_hr = 18
     rpi_data.read_sensors(current_hr,mylcd)
     # the main function
     # obtain CIMIS humidity, temperature, and ET0

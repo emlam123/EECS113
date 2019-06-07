@@ -45,7 +45,8 @@ def read_sensors(current_hour,mylcd):
 
 
     global temperature, humidity, temp_avg, hum_avg, count, cimis_count
-    
+    print("CURRENT HR: %d\n" %current_hour)
+
     while (True):
         temperature, humidity = local.local_data(mylcd)
         temp_avg += temperature
@@ -53,19 +54,20 @@ def read_sensors(current_hour,mylcd):
         count=count+1
         print("TEMP SUM: %d HUM SUM: %d\n" %(temp_avg,hum_avg))
         
-        new_hour = datetime.datetime.now().time().hour
+        new_time = datetime.datetime.now().time()
         #current_hour = 12
         #current_hour = 9
         #new_hour = 10
         #new_hour = current_hour+1
         #cimis_count = 2
-        if (new_hour > current_hour):
+        if (new_time.hour > current_hour and (new_time.minute==30 or new_time.minute==59)):
             temp_avg = temp_avg/count
             hum_avg = hum_avg/count
             print("Temp Avg: %d Hum Avg: %d\n" %(temp_avg, hum_avg))
             
             while (cimis.cimis(current_hour*100)==None):
                 cimis.cimis(current_hour*100)
+                print("Current hour:%d\n" %(current_hour))
                 print("waiting\n")
 
             cimis_hr, cimis_eto, cimis_temp, cimis_hum = cimis.cimis(current_hour*100)

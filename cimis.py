@@ -23,29 +23,26 @@ def cimis(current_hr):
         ('dataItems','day-asce-eto,hly-asce-eto,hly-rel-hum,hly-air-tmp')
     )
 
-    while True:
-        try:
-            response = requests.get('https://et.water.ca.gov/api/asdf', headers=headers, params=params)
-            data = response.json() # JSON format: https://et.water.ca.gov/Rest/Index
- 
-            records = data["Data"]["Providers"][0]["Records"][1:] # skip first line, which is NoneType
+    response = requests.get('https://et.water.ca.gov/api/data', headers=headers, params=params)
+    print(response.status_code)
+    if (response.status_code!=200):
+        return None
+    data = response.json() # JSON format: https://et.water.ca.gov/Rest/Index
 
-            for record in records:
-                eto = record.get("HlyAsceEto")
-                humidity = record.get("HlyRelHum")
-                temperature = record.get("HlyAirTmp")
-                if (eto.get("Value") != None):
-                    if (int(record.get("Hour"))==current_hr):    
-                        print("[%d] Et0: %.2f; Temp: %.2f Humidity: %.2f" % (int(record.get("Hour")), float(eto.get("Value")), float(temperature.get("Value")), float(humidity.get("Value"))))
-                        return (int(record.get("Hour")), float(eto.get("Value")), float(temperature.get("Value")), float(humidity.get("Value")))
+    records = data["Data"]["Providers"][0]["Records"][1:] # skip first line, which is NoneType
 
-                else:
-                    return None
+    for record in records:
+        eto = record.get("HlyAsceEto")
+        humidity = record.get("HlyRelHum")
+        temperature = record.get("HlyAirTmp")
+        if (eto.get("Value") != None):
+            if (int(record.get("Hour"))==current_hr):    
+                print("[%d] Et0: %.2f; Temp: %.2f Humidity: %.2f" % (int(record.get("Hour")), float(eto.get("Value")), float(temperature.get("Value")), float(humidity.get("Value"))))
+                return (int(record.get("Hour")), float(eto.get("Value")), float(temperature.get("Value")), float(humidity.get("Value")))
 
-            break
-        except:
-            print("in the except")
-            continue
+        else:
+            return None
+
 
 
 if __name__ == '__main__':
