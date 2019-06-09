@@ -68,7 +68,7 @@ def read_sensors(current_hour,mylcd):
     while (True):
         new_time = datetime.datetime.now().time()
 
-        if (new_time.hour > current_hour) and (new_time.minute==30 or new_time.minute==59)):
+        if (new_time.hour > current_hour and (new_time.minute==30 or new_time.minute==59)):
             buzzer.buzz()
 
             if (cimis.cimis(current_hour*100)==None):
