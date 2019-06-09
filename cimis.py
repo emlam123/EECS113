@@ -1,7 +1,7 @@
 from datetime import datetime
 import config
 import requests
-
+import json
 """
 *** cURL equivalent *** 
     curl -H "Accept: application/json" https://et.water.ca.gov/api/data?appKey=APPKEY&targets=75&startDate=2019-05-30&endDate=2010-05-30&dataItems=day-asce-eto,hly-asce-eto
@@ -28,7 +28,12 @@ def cimis(current_hr):
     print(response.status_code)
     if (response.status_code!=200):
         return None
-    data = response.json() # JSON format: https://et.water.ca.gov/Rest/Index
+    
+    try:
+        data = response.json() # JSON format: https://et.water.ca.gov/Rest/Index
+    except json.decoder.JSONDecodeError:
+        print("JSONDECODEERROR\n")
+        return None
 
     records = data["Data"]["Providers"][0]["Records"][1:] # skip first line, which is NoneType
 

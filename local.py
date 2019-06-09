@@ -4,9 +4,10 @@ import Adafruit_DHT as fruit
 import I2C_LCD_driver 
 import datetime
 import rpi_data
+from time import sleep
+import time
 
-
-def local_data(mylcd,temperatures,humidities):
+def local_data(mylcd,temperatures,humidities,mutex):
     temp_avg=0
     hum_avg=0
     count=0
@@ -23,8 +24,14 @@ def local_data(mylcd,temperatures,humidities):
         if humidity is not None and temperature is not None:
             #display temp and humidity on lcd
             temperature = temperature * (9/5) + 32
+            mutex.acquire()
+            mylcd.lcd_clear()
+            #time.sleep(1)
             mylcd.lcd_display_string("Temp: %.1f F      " %(temperature), 1)
             mylcd.lcd_display_string("Humidity: %.1f %% " %(humidity),2)
+            mutex.release()
+
+            time.sleep(1)
             print ("Temp: {0:0.1f}C Humidity: {1:0.1f} %".format(temperature,humidity))
             temp_avg+=temperature
             hum_avg+=humidity

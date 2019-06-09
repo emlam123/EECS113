@@ -7,7 +7,6 @@ import threading
 import I2C_LCD_driver
 import buzzer
 import csv 
-
 temperature = 0
 humidity = 0
 temp_avg = 0
@@ -16,6 +15,7 @@ count = 0
 cimis_count = 0
 temperatures=[]
 humidities=[]
+mutex = threading.Lock()
 # Derate the ET
 def derate(cimis_et, cimis_hum, gpi_hum, cimis_temp, gpi_temp):
     derated_et = cimis_et * (gpi_hum / cimis_hum) * (cimis_temp / gpi_temp)
@@ -35,9 +35,9 @@ def water_duration(water):
     return water_min
 
 # Turn on the relay until the entire law is watered at a rate of 1020 gallons per hour or interrupted by nearby person
-def water_lawn(water_duration,mylcd):
+def water_lawn(water_duration,mylcd,mutex):
     start_time = time.time()
-    t=threading.Thread(target=relay_motion.relay,args=(start_time,water_duration,mylcd))
+    t=threading.Thread(target=relay_motion.relay,args=(start_time,water_duration,mylcd,mutex,))
     t.start()
         
 
@@ -46,15 +46,16 @@ def water_lawn(water_duration,mylcd):
 def read_sensors(current_hour,mylcd):
 
 
-    global temperatures,humidities,temperature, humidity, temp_avg, hum_avg, count, cimis_count
+    global mutex,temperatures,humidities,temperature, humidity, temp_avg, hum_avg, count, cimis_count
     print("CURRENT HR: %d\n" %current_hour)
-    #current_hour = 8
+    #current_hour = 11
 
     temperatures = [None]*24
     humidities = [None]*24
-    '''
+    
     temperatures[11] = 64
     humidities[11] = 56
+    '''
     temperatures[8] = 65
     humidities[8] = 56
     temperatures[9] = 75
@@ -63,7 +64,7 @@ def read_sensors(current_hour,mylcd):
     humidities[10]=56
     '''
 
-    t=threading.Thread(target=local.local_data,args=(mylcd,temperatures,humidities,))
+    t=threading.Thread(target=local.local_data,args=(mylcd,temperatures,humidities,mutex,))
     t.start()
     
     columns = [['Hour','Derated ET','Temperature','Humidity']]
@@ -71,15 +72,15 @@ def read_sensors(current_hour,mylcd):
         writer = csv.writer(f)
         writer.writerow(columns)
     f.close()
-    
+   
+    water_lawn(1,mylcd,mutex)
     while (True):
         new_time = datetime.datetime.now().time()
 
-        if (new_time.hour > current_hour and (new_time.minute==30 or new_time.minute==59)):
+        if (new_time.hour > current_hour):#  and (new_time.minute==30 or new_time.minute==59)):
             buzzer.buzz()
 
             if (cimis.cimis(current_hour*100)==None):
-                cimis.cimis(current_hour*100)
                 print("Current hour:%d\n" %(current_hour))
                 print("waiting\n")
                 continue
@@ -125,5 +126,5 @@ def read_sensors(current_hour,mylcd):
             
             duration = water_duration(water)
             print(duration)
-            water_lawn(duration,mylcd)
+            water_lawn(duration,mylcd,mutex)
 
