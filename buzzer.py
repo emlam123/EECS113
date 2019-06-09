@@ -1,5 +1,7 @@
 import RPi.GPIO as GPIO
 from time import sleep
+import time
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 buzzer = 27 # pin 13
 GPIO.setup(buzzer, GPIO.OUT)

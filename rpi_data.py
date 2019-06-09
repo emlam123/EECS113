@@ -6,6 +6,7 @@ import relay_motion
 import threading
 import I2C_LCD_driver
 import buzzer
+import csv 
 
 temperature = 0
 humidity = 0
@@ -47,13 +48,13 @@ def read_sensors(current_hour,mylcd):
 
     global temperatures,humidities,temperature, humidity, temp_avg, hum_avg, count, cimis_count
     print("CURRENT HR: %d\n" %current_hour)
-    #current_hour = 7
+    #current_hour = 8
 
     temperatures = [None]*24
     humidities = [None]*24
     '''
-    temperatures[7] = 64
-    humidities[7] = 56
+    temperatures[11] = 64
+    humidities[11] = 56
     temperatures[8] = 65
     humidities[8] = 56
     temperatures[9] = 75
@@ -64,7 +65,13 @@ def read_sensors(current_hour,mylcd):
 
     t=threading.Thread(target=local.local_data,args=(mylcd,temperatures,humidities,))
     t.start()
-
+    
+    columns = [['Hour','Derated ET','Temperature','Humidity']]
+    with open('data.csv','w') as f:
+        writer = csv.writer(f)
+        writer.writerow(columns)
+    f.close()
+    
     while (True):
         new_time = datetime.datetime.now().time()
 
@@ -82,6 +89,12 @@ def read_sensors(current_hour,mylcd):
             print(temperatures[current_hour],humidities[current_hour])
 
             new_et = derate(cimis_eto,cimis_hum,humidities[current_hour],cimis_temp,temperatures[current_hour])
+            
+            data = [[current_hour,new_et,temperatures[current_hour],humidities[current_hour]]]
+            with open('data.csv','a') as f:
+                writer = csv.writer(f)
+                writer.writerow(data)
+            f.close()
 
             current_hour += 1
             print("HOUR: %d\n" %current_hour)
@@ -89,7 +102,15 @@ def read_sensors(current_hour,mylcd):
             while(cimis.cimis(current_hour*100)!=None):
                 cimis_hr1, cimis_eto1, cimis_temp1, cimis_hum1 = cimis.cimis(current_hour*100)
                 print("cimis eto1:%f\n" %cimis_eto1)
-                new_et += derate(cimis_eto1, cimis_hum, humidities[current_hour], cimis_temp, temperatures[current_hour])
+                et = derate(cimis_eto1, cimis_hum, humidities[current_hour], cimis_temp, temperatures[current_hour])
+                
+                data = [[current_hour,et,temperatures[current_hour],humidities[current_hour]]]
+                with open('data.csv','a') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(data)
+                f.close()
+                
+                new_et += et
                 print("NEW ETO SUM: %f\n" %new_et)
                 current_hour+=1
                 cimis_count+=1
