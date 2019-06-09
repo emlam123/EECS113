@@ -5,6 +5,7 @@ import cimis
 import relay_motion
 import threading
 import I2C_LCD_driver
+import buzzer
 
 temperature = 0
 humidity = 0
@@ -63,28 +64,23 @@ def read_sensors(current_hour,mylcd):
 
     t=threading.Thread(target=local.local_data,args=(mylcd,temperatures,humidities,))
     t.start()
-    #print(temperatures[current_hour],humidities[current_hour])
 
     while (True):
         new_time = datetime.datetime.now().time()
 
-        if (new_time.hour > current_hour):# and (new_time.minute==30 or new_time.minute==59)):
-            #temp_avg = temp_avg/count
-            #hum_avg = hum_avg/count
-            #print("Temp Avg: %d Hum Avg: %d\n" %(temp_avg, hum_avg))
-            
+        if (new_time.hour > current_hour) and (new_time.minute==30 or new_time.minute==59)):
+            buzzer.buzz()
+
             if (cimis.cimis(current_hour*100)==None):
                 cimis.cimis(current_hour*100)
                 print("Current hour:%d\n" %(current_hour))
                 print("waiting\n")
-                #save average and continue collecting data
                 continue
 
             cimis_hr, cimis_eto, cimis_temp, cimis_hum = cimis.cimis(current_hour*100)
             print("CIMIS hr: %d eto: %f hum: %f" %(cimis_hr, cimis_eto, cimis_hum))
             print(temperatures[current_hour],humidities[current_hour])
 
-            #current_hour = datetime.datetime.now().time().hour
             new_et = derate(cimis_eto,cimis_hum,humidities[current_hour],cimis_temp,temperatures[current_hour])
 
             current_hour += 1
@@ -97,23 +93,9 @@ def read_sensors(current_hour,mylcd):
                 print("NEW ETO SUM: %f\n" %new_et)
                 current_hour+=1
                 cimis_count+=1
-            '''
-            if (cimis_count>0):
-                missed_hours = cimis_count  
-                print("CIMIS_Count = %d\n" %missed_hours)
-
-                for i in range (cimis_count):
-                    current_hour -= 1
-                    cimis_hr1, cimis_eto1, cimis_temp1, cimis_hum1 = cimis.cimis(current_hour*100)
-                    cimis_eto += cimis_eto1
-                    print("Eto sum: %f\n" %cimis_eto)
-                    cimis_temp += cimis_temp1
-                    cimis_hum += cimis_hum1
-                    print("TEMP SUM: %f HUM SUM: %f\n" %(cimis_temp, cimis_hum))
-                '''    
+            
+            
             print("MISSED HOURS: %d\n" %cimis_count)
-            #cimis_temp = cimis_temp / (cimis_count+1)
-            #cimis_hum = cimis_hum / (cimis_count+1)
             cimis_count = 0 
             print("CURRENT HOUR NEXT: %d\n" %current_hour) 
                     
