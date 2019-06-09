@@ -5,6 +5,7 @@ import cimis
 import relay_motion
 import threading
 import I2C_LCD_driver
+import buzzer
 
 temperature = 0
 humidity = 0
@@ -65,6 +66,7 @@ def read_sensors(current_hour,mylcd):
         #new_hour = current_hour+1
         #cimis_count = 2
         if (new_time.hour > current_hour and (new_time.minute==30 or new_time.minute==59)):
+            buzzer.buzz()
             #temp_avg = temp_avg/count
             #hum_avg = hum_avg/count
             #print("Temp Avg: %d Hum Avg: %d\n" %(temp_avg, hum_avg))

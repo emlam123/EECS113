@@ -7,6 +7,7 @@ import requests
     curl -H "Accept: application/json" https://et.water.ca.gov/api/data?appKey=APPKEY&targets=75&startDate=2019-05-30&endDate=2010-05-30&dataItems=day-asce-eto,hly-asce-eto
 
 """
+target = '75'
 def cimis(current_hr):
     # Requests data from today
     today = datetime.today().strftime('%Y-%m-%d')
@@ -46,6 +47,7 @@ def cimis(current_hr):
 
 
 if __name__ == '__main__':
+    kp = keypad(columnCount = 
     current_hour=datetime.now().time().hour
     current_hour = (current_hour)*100
     if (cimis(current_hour)!=None):
