@@ -1,9 +1,14 @@
-from gpiozero import Buzzer
+import RPi.GPIO as GPIO
 from time import sleep
 
-buzzer = Buzzer(13) # GPIO27
+GPIO.setmode(GPIO.BCM)
+buzzer = 27 # pin 13
+GPIO.setup(buzzer, GPIO.OUT)
 
 def buzz():
-    buzzer.on()
-    sleep(1)
-    buzzer.off()
+    t_end = time.time() + 5
+    while time.time() < t_end:
+        GPIO.output(buzzer, GPIO.HIGH)
+        sleep(.001)
+        GPIO.output(buzzer, GPIO.LOW)
+        sleep(.001)
