@@ -48,7 +48,8 @@ def relay(start_time,water_time,mylcd):
     try:
         while(((time.time()-w_time)/60) < water_time):
                 sprinkler(mylcd)
-        
+                 
+        GPIO.output(RelayPin, GPIO.LOW)
 
     except KeyboardInterrupt:
         destroy()
