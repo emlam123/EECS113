@@ -47,7 +47,7 @@ def cimis(current_hr):
 
 
 if __name__ == '__main__':
-    kp = keypad(columnCount = 
+   
     current_hour=datetime.now().time().hour
     current_hour = (current_hour)*100
     if (cimis(current_hour)!=None):
