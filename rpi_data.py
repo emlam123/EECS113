@@ -48,13 +48,12 @@ def read_sensors(current_hour,mylcd):
 
     global mutex,temperatures,humidities,temperature, humidity, temp_avg, hum_avg, count, cimis_count
     print("CURRENT HR: %d\n" %current_hour)
-    #current_hour = 11
 
     temperatures = [None]*24
     humidities = [None]*24
     
-    temperatures[11] = 64
-    humidities[11] = 56
+    #temperatures[7] = 77
+    #humidities[7] = 56
     '''
     temperatures[8] = 65
     humidities[8] = 56
@@ -63,29 +62,33 @@ def read_sensors(current_hour,mylcd):
     temperatures[10]=77
     humidities[10]=56
     '''
-
+    today = datetime.date.today()
+    
     t=threading.Thread(target=local.local_data,args=(mylcd,temperatures,humidities,mutex,))
     t.start()
-    
+   
+    #cimis_hr, cimis_eto, cimis_temp, cimis_hum = cimis.cimis(18*100,temperatures[18],humidities[18])
+    #print("CIMIS hr: %d eto: %f hum: %f" %(cimis_hr, cimis_eto, cimis_hum))
+
     columns = [['Hour','Derated ET','Temperature','Humidity']]
     with open('data.csv','w') as f:
         writer = csv.writer(f)
         writer.writerow(columns)
     f.close()
    
-    water_lawn(1,mylcd,mutex)
     while (True):
         new_time = datetime.datetime.now().time()
+        now = datetime.date.today()
 
-        if (new_time.hour > current_hour):#  and (new_time.minute==30 or new_time.minute==59)):
+        if ((new_time.hour > current_hour or now.day > today.day or now.month > today.month) and (new_time.minute==30 or new_time.minute==45 or new_time.minute==50)):
             buzzer.buzz()
 
-            if (cimis.cimis(current_hour*100)==None):
+            if (cimis.cimis(current_hour*100, temperatures[current_hour], humidities[current_hour])==None):
                 print("Current hour:%d\n" %(current_hour))
                 print("waiting\n")
                 continue
 
-            cimis_hr, cimis_eto, cimis_temp, cimis_hum = cimis.cimis(current_hour*100)
+            cimis_hr, cimis_eto, cimis_temp, cimis_hum = cimis.cimis(current_hour*100,temperatures[current_hour],humidities[current_hour])
             print("CIMIS hr: %d eto: %f hum: %f" %(cimis_hr, cimis_eto, cimis_hum))
             print(temperatures[current_hour],humidities[current_hour])
 
@@ -100,7 +103,7 @@ def read_sensors(current_hour,mylcd):
             current_hour += 1
             print("HOUR: %d\n" %current_hour)
 
-            while(cimis.cimis(current_hour*100)!=None):
+            while(cimis.cimis(current_hour*100,temperatures[current_hour],humidities[current_hour])!=None):
                 cimis_hr1, cimis_eto1, cimis_temp1, cimis_hum1 = cimis.cimis(current_hour*100)
                 print("cimis eto1:%f\n" %cimis_eto1)
                 et = derate(cimis_eto1, cimis_hum, humidities[current_hour], cimis_temp, temperatures[current_hour])

@@ -8,7 +8,8 @@ import json
 
 """
 target = '75'
-def cimis(current_hr):
+def cimis(current_hr,emergency_temp,emergency_hum):
+    print("IN CIMIS\n")
     # Requests data from today
     today = datetime.today().strftime('%Y-%m-%d')
 
@@ -30,21 +31,35 @@ def cimis(current_hr):
         return None
     
     try:
-        data = response.json() # JSON format: https://et.water.ca.gov/Rest/Index
-    except json.decoder.JSONDecodeError:
-        print("JSONDECODEERROR\n")
+        data = response.json() # JSON format: https://et.water.ca.gov/Rest/Index 
+    except ValueError:
+        print("JSON DECODE ERROR\n")
         return None
 
     records = data["Data"]["Providers"][0]["Records"][1:] # skip first line, which is NoneType
-
+    
     for record in records:
         eto = record.get("HlyAsceEto")
         humidity = record.get("HlyRelHum")
         temperature = record.get("HlyAirTmp")
         if (eto.get("Value") != None):
-            if (int(record.get("Hour"))==current_hr):    
-                print("[%d] Et0: %.2f; Temp: %.2f Humidity: %.2f" % (int(record.get("Hour")), float(eto.get("Value")), float(temperature.get("Value")), float(humidity.get("Value"))))
-                return (int(record.get("Hour")), float(eto.get("Value")), float(temperature.get("Value")), float(humidity.get("Value")))
+            if (int(record.get("Hour"))==current_hr):
+                
+                if (float(humidity.get("Value"))!=None):
+                    humidity = float(humidity.get("Value"))
+
+                else:
+                    humidity = emergency_hum
+
+                if (float(temperature.get("Value"))!=None):
+                    temperature = float(temperature.get("Value"))
+                
+                else:
+                    temperature=emergency_temp
+
+
+                print("[%d] Et0: %.2f; Temp: %.2f Humidity: %.2f" % (int(record.get("Hour")), float(eto.get("Value")), temperature, humidity))
+                return (int(record.get("Hour")), float(eto.get("Value")), temperature, humidity)
 
         else:
             return None

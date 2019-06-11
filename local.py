@@ -36,7 +36,6 @@ def local_data(mylcd,temperatures,humidities,mutex):
             temp_avg+=temperature
             hum_avg+=humidity
             count+=1
-            print("TEMP AVG: %d HUM AVG: %d\n" %(temp_avg,hum_avg))
             temperatures[current_hour]=temp_avg
             humidities[current_hour]=hum_avg
             #return (temperature,humidity)
