@@ -7,11 +7,11 @@ import threading
 import I2C_LCD_driver
 import buzzer
 import csv 
+
 temperature = 0
 humidity = 0
 temp_avg = 0
 hum_avg = 0
-count = 0
 cimis_count = 0
 temperatures=[]
 humidities=[]
