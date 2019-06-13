@@ -1,4 +1,6 @@
 from datetime import datetime
+from keypad import keypad
+import time
 import config
 import requests
 
@@ -7,9 +9,12 @@ import requests
     curl -H "Accept: application/json" https://et.water.ca.gov/api/data?appKey=APPKEY&targets=75&startDate=2019-05-30&endDate=2010-05-30&dataItems=day-asce-eto,hly-asce-eto
 
 """
-target = '75'
+#target = '75'
 def cimis(current_hr):
     # Requests data from today
+    
+    #print (len(target))
+    #print (target)
     today = datetime.today().strftime('%Y-%m-%d')
 
     headers = {
@@ -47,7 +52,32 @@ def cimis(current_hr):
 
 
 if __name__ == '__main__':
-   
+    ### KEYPAD SETUP ###
+    print("Enter your zip code or press '#' for Irvine: ")
+    kp = keypad(columnCount = 4)
+
+    digit = None
+    while digit == None:
+        digit = kp.getKey()
+
+    # 5-digit wait, representing zip code
+    global target
+    target = ""
+    for i in range(5):
+        digit = None
+        while digit == None:
+            digit = kp.getKey()
+
+        # end input
+        if (digit == "#"):
+            time.sleep(0.3)
+            break
+        target = target + str(digit)
+        print (digit)
+        time.sleep(0.3)
+
+    ### END KEYPAD SETUP ###
+
     current_hour=datetime.now().time().hour
     current_hour = (current_hour)*100
     if (cimis(current_hour)!=None):
