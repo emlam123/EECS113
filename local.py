@@ -32,7 +32,7 @@ def local_data(mylcd,temperatures,humidities,mutex):
             mutex.release()
 
             time.sleep(1)
-            print ("Temp: {0:0.1f}C Humidity: {1:0.1f} %".format(temperature,humidity))
+            print ("Temp: {0:0.1f}F Humidity: {1:0.1f} %".format(temperature,humidity))
             temp_avg+=temperature
             hum_avg+=humidity
             count+=1
