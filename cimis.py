@@ -25,7 +25,7 @@ def cimis(current_hr,emergency_temp,emergency_hum):
 
     params = (
         ('appKey', config.cimis_key),
-        ('targets', target),
+        ('targets', '75'),
         ('startDate', today),
         ('endDate', today), 
         ('dataItems','day-asce-eto,hly-asce-eto,hly-rel-hum,hly-air-tmp')
