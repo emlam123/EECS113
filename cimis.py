@@ -1,8 +1,6 @@
 from datetime import datetime
-from keypad import keypad
-import RPi.GPIO as GPIO
-import time
 import config
+import main
 import requests
 import json
 """
@@ -16,6 +14,9 @@ def cimis(current_hr,emergency_temp,emergency_hum):
     # Requests data from today
     today = datetime.today().strftime('%Y-%m-%d')
 
+    target = main.target
+    if (len(target)<5):
+        target = '75'
     print("Zip code: %s" % target)
 
     headers = {
@@ -72,25 +73,6 @@ def cimis(current_hr,emergency_temp,emergency_hum):
 
 
 if __name__ == '__main__':
-
-    ### KEYPAD INITIALIZATION ###
-    kp = keypad(columnCount = 4)
-    digit = None
-
-    global target
-    target = ""
-    print("Enter your zip code or press '#' for Irvine: ")
-    for i in range(5):
-        digit = None
-        while digit == None:
-            digit = kp.getKey()
-        if (digit == "#"):
-            break;
-        print(digit)
-        target = target + str(digit)
-        time.sleep(0.4)
-
-    ### END KEYPAD ###
     current_hour=datetime.now().time().hour
     current_hour = (current_hour)*100
     if (cimis(current_hour)!=None):

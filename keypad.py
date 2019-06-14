@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 
 class keypad():
     def __init__(self, columnCount = 3):
-        GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BCM)
 
         # CONSTANTS
         if columnCount is 3:
@@ -26,8 +26,8 @@ class keypad():
                 ["*",0,"#","D"]
             ]
 
-            self.ROW         = [15,29,31,33]
-            self.COLUMN      = [16,18,22,32]
+            self.ROW         = [22,5,6,13]
+            self.COLUMN      = [23,24,25,12]
         else:
             return
 
@@ -97,4 +97,4 @@ if __name__ == '__main__':
         digit = kp.getKey()
 
     # Print the result
-    print digit
+    print (digit)
