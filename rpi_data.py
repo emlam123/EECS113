@@ -52,11 +52,12 @@ def read_sensors(current_hour,mylcd):
     temperatures = [None]*24
     humidities = [None]*24
     
-    #temperatures[7] = 77
-    #humidities[7] = 56
+    #current_hour = 14
+    #temperatures[15] = 77
+    #humidities[15] = 56
+    #temperatures[14] = 73.4
+    #humidities[14] = 54
     '''
-    temperatures[8] = 65
-    humidities[8] = 56
     temperatures[9] = 75
     humidities[9] = 54
     temperatures[10]=77
@@ -104,7 +105,7 @@ def read_sensors(current_hour,mylcd):
             print("HOUR: %d\n" %current_hour)
 
             while(cimis.cimis(current_hour*100,temperatures[current_hour],humidities[current_hour])!=None):
-                cimis_hr1, cimis_eto1, cimis_temp1, cimis_hum1 = cimis.cimis(current_hour*100)
+                cimis_hr1, cimis_eto1, cimis_temp1, cimis_hum1 = cimis.cimis(current_hour*100, temperatures[current_hour], humidities[current_hour])
                 print("cimis eto1:%f\n" %cimis_eto1)
                 et = derate(cimis_eto1, cimis_hum, humidities[current_hour], cimis_temp, temperatures[current_hour])
                 

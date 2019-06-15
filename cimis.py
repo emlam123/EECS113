@@ -14,10 +14,10 @@ def cimis(current_hr,emergency_temp,emergency_hum):
     # Requests data from today
     today = datetime.today().strftime('%Y-%m-%d')
 
-    target = main.target
-    if (len(target)<5):
-        target = '75'
-    print("Zip code: %s" % target)
+    ##target = main.target
+    #if (target!=):
+    #    target = '75'
+    #print("Zip code: %s" % target)
 
     headers = {
         'Accept': 'application/json',
